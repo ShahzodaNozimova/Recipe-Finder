@@ -3,3 +3,6 @@ Nozimova shahzoda
 
 Se10463
 Khalilova Maftuna
+
+se10372
+Sadriddinova Maftuna
