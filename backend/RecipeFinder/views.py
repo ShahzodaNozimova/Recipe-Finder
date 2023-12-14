@@ -5,7 +5,10 @@ from rest_framework.response import Response
 
 from RecipeFinder.models import Category, Recipe, Tag
 from RecipeFinder.serializers import SignInSerializer, SignUpSerializer, CategorySerializer, RecipeSerializer, \
-    TagSerializer
+    TagSerializer, DisplayRecipeSerializer, UserProfileUpdateSerializer
+
+from rest_framework.generics import RetrieveUpdateAPIView
+from RecipeFinder.models import User
 
 
 @api_view(['POST'])
@@ -37,10 +40,14 @@ class CategoryRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated]
 
+
 class RecipeListCreateView(generics.ListCreateAPIView):
-    queryset = Recipe.objects.all()
-    serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return DisplayRecipeSerializer
+        return RecipeSerializer
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -58,11 +65,22 @@ class RecipeListCreateView(generics.ListCreateAPIView):
 
         return queryset
 
+
+
 class RecipeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
     permission_classes = [IsAuthenticated]
 
+    def get_object(self):
+        queryset = self.get_queryset()
+        recipe = generics.get_object_or_404(queryset, pk=self.kwargs.get('pk'))
+        
+        # Check if the recipe belongs to the current user
+        if recipe.user != self.request.user:
+            raise PermissionError("You don't have permission to perform this action.")
+
+        return recipe
 
 class TagListCreateView(generics.ListCreateAPIView):
     queryset = Tag.objects.all()
@@ -73,3 +91,22 @@ class TagRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = [IsAuthenticated]
+
+
+class UserProfileUpdateView(RetrieveUpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileUpdateSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def put(self, request, *args, **kwargs):
+        user = self.get_object()
+        serializer = self.get_serializer(user, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

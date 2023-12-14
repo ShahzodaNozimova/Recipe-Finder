@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 from django.conf import settings
@@ -63,7 +64,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'RecipeFinder.urls'
 
 CORS_ALLOW_ALL_ORIGINS = True
-ALLOWED_HOSTS = ['2f2b-195-158-6-37.ngrok-free.app', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['wise-definitely-sunbeam.ngrok-free.app', 'localhost', '127.0.0.1']
 
 TEMPLATES = [
     {
@@ -161,6 +162,9 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 AUTH_USER_MODEL = 'RecipeFinder.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/

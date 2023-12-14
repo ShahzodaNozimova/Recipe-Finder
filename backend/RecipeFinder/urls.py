@@ -16,9 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 
 from RecipeFinder.views import sign_in, sign_up, CategoryListCreateView, CategoryRetrieveUpdateDestroyView, \
-    RecipeListCreateView, RecipeRetrieveUpdateDestroyView, TagListCreateView, TagRetrieveUpdateDestroyView
+    RecipeListCreateView, RecipeRetrieveUpdateDestroyView, TagListCreateView, TagRetrieveUpdateDestroyView, UserProfileUpdateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,4 +36,10 @@ urlpatterns = [
 
     path('recipes/', RecipeListCreateView.as_view(), name='recipe-list-create'),
     path('recipes/<int:pk>/', RecipeRetrieveUpdateDestroyView.as_view(), name='recipe-retrieve-update-destroy'),
+
+    path('profile/update/', UserProfileUpdateView.as_view(), name='update-profile'),
 ]
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

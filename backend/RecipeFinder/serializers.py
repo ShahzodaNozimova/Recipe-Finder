@@ -72,8 +72,20 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = ('id', 'name')
 
+class DisplayTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = ('id', 'name')
+
+class DisplayRecipeSerializer(serializers.ModelSerializer):
+    ingredients = DisplayTagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'category', 'ingredients', 'image', 'description', 'cook_time', 'created_at')
 
 class RecipeSerializer(serializers.ModelSerializer):
+    ingredients = serializers.PrimaryKeyRelatedField(queryset=Tag.objects.all(), many=True)
     class Meta:
         model = Recipe
         fields = ('id', 'category', 'ingredients', 'image', 'description', 'cook_time', 'created_at')
@@ -82,3 +94,10 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = '__all__'
+
+
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email') 
