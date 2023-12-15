@@ -8,4 +8,4 @@ se10372
 Sadriddinova Maftuna
 
 Se12202
-Komolova Dilafruz
+Kamolova Dilafruz
